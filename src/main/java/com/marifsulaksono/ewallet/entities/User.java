@@ -16,8 +16,6 @@ public class User implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
-    // private static final long serialVersionUID = 1L;
     private Long id;
 
     @NotEmpty(message = "Name is required")
@@ -25,7 +23,7 @@ public class User implements Serializable {
     private String name;
 
     @NotEmpty(message = "Email is required")
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @NotEmpty(message = "Email is required")
