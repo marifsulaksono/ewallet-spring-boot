@@ -22,8 +22,8 @@ public class UserService {
         return userRepo.findAll();
     }
 
-    public List<User> searchByNmae(String name) {
-        return userRepo.findByNameContains(name);
+    public List<User> searchByName(String name) {
+        return userRepo.searchByName("%"+name+"%");
     }
 
     public User getById(Long id) {

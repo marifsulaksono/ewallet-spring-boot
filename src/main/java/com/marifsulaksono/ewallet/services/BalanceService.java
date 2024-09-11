@@ -1,5 +1,7 @@
 package com.marifsulaksono.ewallet.services;
 
+import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,10 @@ public class BalanceService {
 
     public Iterable<Balance> getAll() {
         return balanceRepo.findAll();
+    }
+
+    public List<Balance> findByUserId(Long userdId) {
+        return balanceRepo.findByUserId(userdId);
     }
 
     public Balance save(Long id, BalanceDto data) {

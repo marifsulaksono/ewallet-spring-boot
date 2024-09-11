@@ -1,11 +1,14 @@
 package com.marifsulaksono.ewallet.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.marifsulaksono.ewallet.dtos.Response;
@@ -34,6 +37,11 @@ public class UserController {
     @GetMapping
     public Iterable<User> getAll() {
         return userService.getAll();
+    }
+
+    @GetMapping("/search")
+    public List<User> searchByName(@RequestParam String name) {
+        return userService.searchByName(name);
     }
 
     @GetMapping("/{id}")
