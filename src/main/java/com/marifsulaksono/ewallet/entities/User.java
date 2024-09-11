@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "users")
@@ -19,22 +20,26 @@ public class User implements Serializable {
     // private static final long serialVersionUID = 1L;
     private Long id;
 
+    @NotEmpty(message = "Name is required")
     @Column(length = 100, nullable = false)
     private String name;
 
+    @NotEmpty(message = "Email is required")
     @Column(nullable = false)
     private String email;
 
-    private double balance;
+    @NotEmpty(message = "Email is required")
+    @Column(nullable = false)
+    private String type;
 
     public User() {
     }
 
-    public User(Long id, String name, String email, double balance) {
+    public User(Long id, String name, String email, String type) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.balance = balance;
+        this.type = type;
     }
 
     public Long getId() {
@@ -61,11 +66,11 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public double getBalance() {
-        return balance;
+    public String getType() {
+        return type;
     }
 
-    public void setBalance(double balance) {
-        this.balance = balance;
+    public void setType(String type) {
+        this.type = type;
     }
 }

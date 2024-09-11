@@ -1,11 +1,18 @@
 package com.marifsulaksono.ewallet.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.marifsulaksono.ewallet.dtos.Response;
 import com.marifsulaksono.ewallet.entities.User;
 import com.marifsulaksono.ewallet.services.UserService;
+
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,14 +42,38 @@ public class UserController {
     }
     
     @PostMapping
-    public User save(@RequestBody User user) {
-        return userService.save(user);
+    public ResponseEntity<Response<User>> save(@Valid @RequestBody User user, Errors errors) {
+        Response<User> response = new Response<>();
+        if (errors.hasErrors()) {
+            for (ObjectError error: errors.getAllErrors()) {
+                response.getMessage().add(error.getDefaultMessage());
+            }
+            response.setStatus("Failed");
+            response.setData(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+        response.setStatus("Success");
+        response.getMessage().add("Berhasil menambahkan data user");
+        response.setData(userService.save(user));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
-    public User updateById(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<Response<User>> updateById(@PathVariable Long id, @Valid @RequestBody User user, Errors errors) {
         user.setId(id);
-        return userService.save(user);
+        Response<User> response = new Response<>();
+        if (errors.hasErrors()) {
+            for (ObjectError error: errors.getAllErrors()) {
+                response.getMessage().add(error.getDefaultMessage());
+            }
+            response.setStatus("Failed");
+            response.setData(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+        response.setStatus("Success");
+        response.getMessage().add("Berhasil mengubah data user");
+        response.setData(userService.save(user));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")
