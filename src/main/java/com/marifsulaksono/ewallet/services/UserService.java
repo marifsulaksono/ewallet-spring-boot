@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.marifsulaksono.ewallet.entities.User;
@@ -26,6 +27,10 @@ public class UserService {
         return userRepo.searchByName("%"+name+"%");
     }
 
+    public Iterable<User> findByName(String name, Pageable pageable) {
+        return userRepo.findByNameContains(name, pageable);
+    }
+
     public User getById(Long id) {
         Optional<User> user = userRepo.findById(id);
         if (!user.isPresent()) {
@@ -37,6 +42,10 @@ public class UserService {
 
     public User save(User user) {
         return userRepo.save(user);
+    }
+
+    public Iterable<User> batchInsert(Iterable<User> users) {
+        return userRepo.saveAll(users);
     }
 
     public void delete(Long id) {

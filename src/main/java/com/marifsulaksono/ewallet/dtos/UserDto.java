@@ -11,7 +11,7 @@ public class UserDto {
     @Email(message = "Email is not valid")
     private String email;
 
-    @NotEmpty(message = "Email is required")
+    @NotEmpty(message = "Type is required")
     private String type;
 
     public String getName() {
