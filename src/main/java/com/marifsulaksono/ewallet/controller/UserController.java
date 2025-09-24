@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.marifsulaksono.ewallet.dto.request.UserPageRequest;
 import com.marifsulaksono.ewallet.dto.request.UserRequest;
 import com.marifsulaksono.ewallet.dto.response.ApiResponse;
 import com.marifsulaksono.ewallet.dto.response.UserResponse;
@@ -50,10 +51,8 @@ public class UserController {
     }
 
     @GetMapping("/paged")
-    public ResponseEntity<ApiResponse<Page<UserResponse>>> getAllBooksPaged(
-            @PageableDefault(size = 10, page = 0, sort = "id") Pageable pageable
-    ) {
-        Page<UserResponse> users = userService.getAllPaginatedUsers(pageable);
+    public ResponseEntity<ApiResponse<Page<UserResponse>>> getAllUserssPaged(UserPageRequest request) {
+        Page<UserResponse> users = userService.getAllPaginatedUsers(request);
         return ResponseEntity.ok(
                 ApiResponse.success(HttpStatus.OK.value(), "Users retrieved successfully", users)
         );

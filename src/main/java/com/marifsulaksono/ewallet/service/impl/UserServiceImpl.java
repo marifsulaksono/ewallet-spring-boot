@@ -4,16 +4,19 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.marifsulaksono.ewallet.dto.request.UserPageRequest;
 import com.marifsulaksono.ewallet.dto.request.UserRequest;
 import com.marifsulaksono.ewallet.dto.response.UserResponse;
 import com.marifsulaksono.ewallet.entity.User;
 import com.marifsulaksono.ewallet.exception.ApiException;
 import com.marifsulaksono.ewallet.repository.UserRepository;
 import com.marifsulaksono.ewallet.service.UserService;
+import com.marifsulaksono.ewallet.spesification.UserSpecification;
 
 import lombok.RequiredArgsConstructor;
 
@@ -53,9 +56,12 @@ public class UserServiceImpl implements UserService {
         return users.stream().map(this::mapToResponse).toList();
     }
 
-    public Page<UserResponse> getAllPaginatedUsers(Pageable pageable) {
-        Page<User> users = userRepository.findAll(pageable);
-        return users.map(this::mapToResponse);
+    public Page<UserResponse> getAllPaginatedUsers(UserPageRequest request) {
+        Specification<User> spec = Specification.where(UserSpecification.hasKeyword(request.getSearch()))
+                .and(UserSpecification.hasRole(request.getRole()));
+
+        return userRepository.findAll(spec, request.toPageable())
+                .map(this::mapToResponse);
     }
 
     @Override
