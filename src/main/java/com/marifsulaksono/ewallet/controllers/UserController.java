@@ -3,6 +3,7 @@ package com.marifsulaksono.ewallet.controllers;
 import java.util.List;
 import java.util.Arrays;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +35,9 @@ public class UserController {
     
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @GetMapping
     public Iterable<User> getAll() {
@@ -94,9 +98,10 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Response<User>> updateById(@PathVariable Long id, @Valid @RequestBody User user, Errors errors) {
-        user.setId(id);
+    public ResponseEntity<Response<User>> updateById(@PathVariable Long id, @Valid @RequestBody User userData, Errors errors) {
         Response<User> response = new Response<>();
+        User user = modelMapper.map(userData, User.class);
+        user.setId(id);
         if (errors.hasErrors()) {
             for (ObjectError error: errors.getAllErrors()) {
                 response.getMessage().add(error.getDefaultMessage());

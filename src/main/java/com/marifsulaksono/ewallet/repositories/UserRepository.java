@@ -1,6 +1,7 @@
 package com.marifsulaksono.ewallet.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,4 +17,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // List<User> findByNameContains(String name); // Derived Query Methods. reference: https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html
 
     Page<User> findByNameContains(String name, Pageable pageable);
+    Optional<User> findByEmail(String email);
 }

@@ -1,9 +1,16 @@
 package com.marifsulaksono.ewallet.entities;
 
-import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,7 +19,7 @@ import jakarta.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "users")
-public class User implements Serializable {
+public class User implements UserDetails {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,9 +33,16 @@ public class User implements Serializable {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @NotEmpty(message = "Password is required")
+    @Column(nullable = false)
+    private String password;
+
     @NotEmpty(message = "Email is required")
     @Column(nullable = false)
     private String type;
+
+    @Enumerated(EnumType.STRING)
+    private AppUserRole appUserRole;
 
     public User() {
     }
@@ -70,5 +84,33 @@ public class User implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(appUserRole.name());
+        return Collections.singletonList(authority);
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    public AppUserRole getAppUserRole() {
+        return appUserRole;
+    }
+
+    public void setAppUserRole(AppUserRole appUserRole) {
+        this.appUserRole = appUserRole;
     }
 }

@@ -5,6 +5,10 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.marifsulaksono.ewallet.entities.User;
@@ -14,10 +18,13 @@ import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class UserService {
+public class UserService implements UserDetailsService {
     
     @Autowired
     private UserRepository userRepo;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public Iterable<User> getAll() {
         return userRepo.findAll();
@@ -41,6 +48,13 @@ public class UserService {
     }
 
     public User save(User user) {
+        boolean existUser = userRepo.findByEmail(user.getEmail()).isPresent();
+        if (existUser) {
+            throw new RuntimeException(String.format("User with email '%s' already exists", user.getEmail()));
+        }
+
+        String encryptedPassword = bCryptPasswordEncoder.encode(user.getPassword());
+        user.setPassword(encryptedPassword);
         return userRepo.save(user);
     }
 
@@ -50,5 +64,12 @@ public class UserService {
 
     public void delete(Long id) {
         userRepo.deleteById(id);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return userRepo.findByEmail(email)
+            .orElseThrow(() -> 
+                new UsernameNotFoundException(String.format("User with email '%s' not found", email)));
     }
 }

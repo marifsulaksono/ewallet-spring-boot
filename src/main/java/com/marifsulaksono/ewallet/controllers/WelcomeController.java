@@ -12,4 +12,9 @@ public class WelcomeController {
     public String welcome() {
         return "Welcome to my code!";
     }
+
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello World from Spring Boot!";
+    }
 }

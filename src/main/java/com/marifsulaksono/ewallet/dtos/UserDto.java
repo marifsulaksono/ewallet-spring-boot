@@ -11,8 +11,14 @@ public class UserDto {
     @Email(message = "Email is not valid")
     private String email;
 
+    @NotEmpty(message = "Password is required")
+    private String password;
+
     @NotEmpty(message = "Type is required")
     private String type;
+
+    @NotEmpty(message = "Password is required")
+    private String appUserRole;
 
     public String getName() {
         return name;
@@ -36,5 +42,21 @@ public class UserDto {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getAppUserRole() {
+        return appUserRole;
+    }
+
+    public void setAppUserRole(String appUserRole) {
+        this.appUserRole = appUserRole;
     }
 }
