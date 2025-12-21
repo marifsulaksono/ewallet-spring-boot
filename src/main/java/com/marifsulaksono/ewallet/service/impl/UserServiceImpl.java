@@ -2,8 +2,8 @@ package com.marifsulaksono.ewallet.service.impl;
 
 import java.util.List;
 
+import com.marifsulaksono.ewallet.util.mapper.UserMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Override
     public UserResponse createUser(UserRequest request) {
@@ -40,28 +41,28 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         User savedUser = userRepository.save(user);
-        return mapToResponse(savedUser);
+        return userMapper.mapToResponse(savedUser);
     }
 
     @Override
     public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
-        return mapToResponse(user);
+        return userMapper.mapToResponse(user);
     }
 
     @Override
     public List<UserResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
-        return users.stream().map(this::mapToResponse).toList();
+        return users.stream().map(userMapper::mapToResponse).toList();
     }
 
     public Page<UserResponse> getAllPaginatedUsers(UserPageRequest request) {
-        Specification<User> spec = Specification.where(UserSpecification.hasKeyword(request.getSearch()))
+        Specification<User> spec = Specification.allOf(UserSpecification.hasKeyword(request.getSearch()))
                 .and(UserSpecification.hasRole(request.getRole()));
 
         return userRepository.findAll(spec, request.toPageable())
-                .map(this::mapToResponse);
+                .map(userMapper::mapToResponse);
     }
 
     @Override
@@ -74,7 +75,7 @@ public class UserServiceImpl implements UserService {
         user.setRole(request.getRole());
 
         User updatedUser = userRepository.save(user);
-        return mapToResponse(updatedUser);
+        return userMapper.mapToResponse(updatedUser);
     }
 
     public void updatePassword(Long id, String oldPassword, String newPassword) {
@@ -94,15 +95,5 @@ public class UserServiceImpl implements UserService {
             throw new ApiException("User not found", HttpStatus.NOT_FOUND);
         }
         userRepository.deleteById(id);
-    }
-
-    // Mapper Entity to Response DTO
-    private UserResponse mapToResponse(User user) {
-        return UserResponse.builder()
-                .id(user.getId())
-                .fullName(user.getFullName())
-                .email(user.getEmail())
-                .role(user.getRole())
-                .build();
     }
 }

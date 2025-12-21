@@ -51,7 +51,7 @@ public class UserController {
     }
 
     @GetMapping("/paged")
-    public ResponseEntity<ApiResponse<Page<UserResponse>>> getAllUserssPaged(UserPageRequest request) {
+    public ResponseEntity<ApiResponse<Page<UserResponse>>> getAllUsersPaged(UserPageRequest request) {
         Page<UserResponse> users = userService.getAllPaginatedUsers(request);
         return ResponseEntity.ok(
                 ApiResponse.success(HttpStatus.OK.value(), "Users retrieved successfully", users)

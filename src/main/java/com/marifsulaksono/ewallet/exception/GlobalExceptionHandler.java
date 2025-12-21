@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Object>> handleApiException(ApiException ex) {
         return ResponseEntity
                 .status(ex.getStatus())
-                .body(ApiResponse.error(ex.getStatus().value(), ex.getMessage())); // <- urutannya int, String
+                .body(ApiResponse.error(ex.getStatus().value(), ex.getMessage()));
     }
 
     // Validation Exception (@Valid)
