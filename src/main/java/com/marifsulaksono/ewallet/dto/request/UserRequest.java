@@ -1,5 +1,6 @@
 package com.marifsulaksono.ewallet.dto.request;
 
+import com.marifsulaksono.ewallet.entity.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -16,5 +17,5 @@ public class UserRequest {
     @NotBlank(message = "Password is required")
     private String password;
 
-    private String role;
+    private UserRole role;
 }

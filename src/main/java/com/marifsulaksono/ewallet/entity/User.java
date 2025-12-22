@@ -35,6 +35,6 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String role = "USER"; // default user role
+    @Enumerated(EnumType.STRING)
+    private UserRole role = UserRole.USER; // default user role
 }

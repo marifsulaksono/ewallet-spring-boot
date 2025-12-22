@@ -1,5 +1,6 @@
 package com.marifsulaksono.ewallet.service.impl;
 
+import com.marifsulaksono.ewallet.entity.UserRole;
 import com.marifsulaksono.ewallet.exception.ApiException;
 import com.marifsulaksono.ewallet.service.AuthService;
 import com.marifsulaksono.ewallet.util.jwt.JwtUtil;
@@ -33,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole("USER");
+        user.setRole(UserRole.USER);
 
         User savedUser = userRepository.save(user);
         return userMapper.mapToResponse(savedUser);
@@ -47,8 +48,8 @@ public class AuthServiceImpl implements AuthService {
             throw new ApiException("Invalid email or password", HttpStatus.BAD_REQUEST);
         }
 
-        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole());
+        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole().toString());
 
-        return new AuthResponse(token, user.getId(), user.getRole());
+        return new AuthResponse(token, user.getId(), user.getRole().toString());
     }
 }

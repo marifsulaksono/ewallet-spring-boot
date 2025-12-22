@@ -22,12 +22,12 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
     @Override
+    @Transactional
     public UserResponse createUser(UserRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new ApiException("Email already in use", HttpStatus.CONFLICT);
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
                 .fullName(request.getFullName())
                 .email(request.getEmail())
                 .password(request.getPassword())
-                .role("USER") // default role
+                .role(request.getRole()) // default role
                 .build();
 
         User savedUser = userRepository.save(user);
