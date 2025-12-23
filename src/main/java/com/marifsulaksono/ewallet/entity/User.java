@@ -20,8 +20,9 @@ import lombok.*;
 public class User extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(length = 50)
+    private String id;
 
     @NotBlank(message = "Full name is required")
     @Column(nullable = false)

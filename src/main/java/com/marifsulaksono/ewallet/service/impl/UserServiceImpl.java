@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getUserById(Long id) {
+    public UserResponse getUserById(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
         return userMapper.mapToResponse(user);
@@ -66,19 +66,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse updateUser(Long id, UserRequest request) {
+    public UserResponse updateUser(String id, UserRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
 
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
-        user.setRole(request.getRole());
+        if (request.getRole() != null && !request.getRole().toString().isBlank()) {
+            user.setRole(request.getRole());
+        }
+
+        System.out.println("User updated: " + user.toString());
 
         User updatedUser = userRepository.save(user);
         return userMapper.mapToResponse(updatedUser);
     }
 
-    public void updatePassword(Long id, String oldPassword, String newPassword) {
+    public void updatePassword(String id, String oldPassword, String newPassword) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
 
@@ -90,7 +94,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public void deleteUser(String id) {
         if (!userRepository.existsById(id)) {
             throw new ApiException("User not found", HttpStatus.NOT_FOUND);
         }
