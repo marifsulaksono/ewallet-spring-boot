@@ -76,8 +76,6 @@ public class UserServiceImpl implements UserService {
             user.setRole(request.getRole());
         }
 
-        System.out.println("User updated: " + user.toString());
-
         User updatedUser = userRepository.save(user);
         return userMapper.mapToResponse(updatedUser);
     }

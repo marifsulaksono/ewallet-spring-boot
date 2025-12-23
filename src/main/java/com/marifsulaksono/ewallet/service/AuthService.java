@@ -7,5 +7,8 @@ import com.marifsulaksono.ewallet.dto.response.UserResponse;
 
 public interface AuthService {
     UserResponse register(RegisterRequest request);
+
     AuthResponse login(LoginRequest request);
+
+    void logout(String token);
 }

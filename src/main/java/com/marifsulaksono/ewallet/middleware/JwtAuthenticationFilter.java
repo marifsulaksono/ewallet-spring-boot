@@ -1,6 +1,9 @@
 package com.marifsulaksono.ewallet.middleware;
 
+import com.marifsulaksono.ewallet.config.RestAuthenticationEntryPoint;
 import com.marifsulaksono.ewallet.exception.JwtAuthenticationException;
+import org.springframework.security.core.AuthenticationException;
+import com.marifsulaksono.ewallet.repository.TokenBlacklistRepository;
 import com.marifsulaksono.ewallet.util.jwt.JwtUtil;
 import com.marifsulaksono.ewallet.util.mapper.UserPrincipalMapper;
 
@@ -28,9 +31,14 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final TokenBlacklistRepository tokenBlacklistRepository;
+    private final RestAuthenticationEntryPoint authenticationEntryPoint;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, TokenBlacklistRepository tokenBlacklistRepository,
+            RestAuthenticationEntryPoint authenticationEntryPoint) {
         this.jwtUtil = jwtUtil;
+        this.tokenBlacklistRepository = tokenBlacklistRepository;
+        this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
     @Override
@@ -47,6 +55,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 if (!jwtUtil.isTokenValid(token)) {
                     throw new JwtAuthenticationException("Invalid or expired token");
+                }
+
+                if (tokenBlacklistRepository.existsByToken(token)) {
+                    throw new JwtAuthenticationException("Token revoked");
                 }
 
                 String id = jwtUtil.extractUserId(token);
@@ -67,7 +79,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             } catch (JwtException ex) {
                 SecurityContextHolder.clearContext();
-                throw new JwtAuthenticationException("Invalid JWT: " + ex.getMessage());
+                authenticationEntryPoint.commence(request, response,
+                        new JwtAuthenticationException("Invalid JWT: " + ex.getMessage()));
+                return;
+            } catch (AuthenticationException ex) {
+                SecurityContextHolder.clearContext();
+                authenticationEntryPoint.commence(request, response, ex);
+                return;
             }
         }
 

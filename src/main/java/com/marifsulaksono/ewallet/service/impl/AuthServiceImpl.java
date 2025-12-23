@@ -9,9 +9,16 @@ import com.marifsulaksono.ewallet.dto.request.LoginRequest;
 import com.marifsulaksono.ewallet.dto.request.RegisterRequest;
 import com.marifsulaksono.ewallet.dto.response.AuthResponse;
 import com.marifsulaksono.ewallet.dto.response.UserResponse;
+import com.marifsulaksono.ewallet.entity.TokenBlacklist;
 import com.marifsulaksono.ewallet.entity.User;
+import com.marifsulaksono.ewallet.repository.TokenBlacklistRepository;
 import com.marifsulaksono.ewallet.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +31,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final TokenBlacklistRepository tokenBlacklistRepository;
 
     public UserResponse register(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -51,5 +59,21 @@ public class AuthServiceImpl implements AuthService {
         String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole().toString());
 
         return new AuthResponse(token, user.getId(), user.getRole().toString());
+    }
+
+    public void logout(String token) {
+
+        Date expiredAt = jwtUtil.extractExpiration(token);
+
+        LocalDateTime expiredAtLdt = expiredAt
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+
+        TokenBlacklist blacklist = new TokenBlacklist();
+        blacklist.setToken(token);
+        blacklist.setExpiredAt(expiredAtLdt);
+
+        tokenBlacklistRepository.save(blacklist);
     }
 }

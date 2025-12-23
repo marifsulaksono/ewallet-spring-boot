@@ -9,8 +9,10 @@ import com.marifsulaksono.ewallet.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,5 +37,16 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse resp = authService.login(request);
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK.value(), "Login successful", resp));
+    }
+
+    @PostMapping("/logout")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Void>> logout(
+            @RequestHeader("Authorization") String header) {
+        String token = header.substring(7);
+        authService.logout(token);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(200, "Logout success", null));
     }
 }

@@ -31,7 +31,7 @@ public class SecurityConfig {
                                                 .authenticationEntryPoint(restAuthenticationEntryPoint)
                                                 .accessDeniedHandler(restAccessDeniedHandler))
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/api/auth/**").permitAll()
+                                                .requestMatchers("/api/auth/**", "/error").permitAll()
                                                 // .requestMatchers("/auth/logout").authenticated()
                                                 .anyRequest().authenticated())
                                 .addFilterBefore(
