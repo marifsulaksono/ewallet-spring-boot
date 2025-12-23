@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,7 @@ public class UserController {
 
     private final UserService userService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse<UserResponse>> createUser(@Valid @RequestBody UserRequest request) {
         UserResponse user = userService.createUser(request);
@@ -52,21 +54,22 @@ public class UserController {
     public ResponseEntity<ApiResponse<Page<UserResponse>>> getAllUsersPaged(UserPageRequest request) {
         Page<UserResponse> users = userService.getAllPaginatedUsers(request);
         return ResponseEntity.ok(
-                ApiResponse.success(HttpStatus.OK.value(), "Users retrieved successfully", users)
-        );
+                ApiResponse.success(HttpStatus.OK.value(), "Users retrieved successfully", users));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponse>> updateUser(@PathVariable Long id,
-                                                                @Valid @RequestBody UserRequest request) {
+            @Valid @RequestBody UserRequest request) {
         UserResponse user = userService.updateUser(id, request);
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK.value(), "User updated successfully", user));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK.value(), "User deleted successfully", null));
     }
-    
+
 }
